@@ -2379,6 +2379,17 @@ using is_detected_convertible =
     #define JSON_PRIVATE_UNLESS_TESTED private
 #endif
 
+// filesystem is only available in GCC >= 8
+#ifdef JSON_HAS_CPP_17
+    #ifdef __GNUC__
+        #if __GNUC_PREREQ(8,0)
+            #define WITH_STD_FILESYSTEM
+        #endif
+    #else
+        #define WITH_STD_FILESYSTEM
+    #endif
+#endif
+
 /*!
 @brief macro to briefly define a mapping between an enum and JSON
 @def NLOHMANN_JSON_SERIALIZE_ENUM
@@ -3950,7 +3961,7 @@ T conditional_static_cast(U value)
 // #include <nlohmann/detail/value_t.hpp>
 
 
-#ifdef JSON_HAS_CPP_17
+#ifdef WITH_STD_FILESYSTEM
     #include <filesystem>
 #endif
 
@@ -4379,7 +4390,7 @@ void from_json(const BasicJsonType& j, std::unordered_map<Key, Value, Hash, KeyE
     }
 }
 
-#ifdef JSON_HAS_CPP_17
+#ifdef WITH_STD_FILESYSTEM
 template<typename BasicJsonType>
 void from_json(const BasicJsonType& j, std::filesystem::path& p)
 {
@@ -4626,7 +4637,7 @@ class tuple_element<N, ::nlohmann::detail::iteration_proxy_value<IteratorType >>
 // #include <nlohmann/detail/value_t.hpp>
 
 
-#ifdef JSON_HAS_CPP_17
+#ifdef WITH_STD_FILESYSTEM
     #include <filesystem>
 #endif
 
@@ -5002,7 +5013,7 @@ void to_json(BasicJsonType& j, const T& t)
     to_json_tuple_impl(j, t, make_index_sequence<std::tuple_size<T>::value> {});
 }
 
-#ifdef JSON_HAS_CPP_17
+#ifdef WITH_STD_FILESYSTEM
 template<typename BasicJsonType>
 void to_json(BasicJsonType& j, const std::filesystem::path& p)
 {
@@ -26595,6 +26606,7 @@ inline nlohmann::json::json_pointer operator "" _json_pointer(const char* s, std
 #undef NLOHMANN_BASIC_JSON_TPL
 #undef JSON_EXPLICIT
 #undef NLOHMANN_CAN_CALL_STD_FUNC_IMPL
+#undef WITH_STD_FILESYSTEM
 
 // #include <nlohmann/thirdparty/hedley/hedley_undef.hpp>
 
